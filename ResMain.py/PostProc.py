@@ -7,6 +7,13 @@ from os import chdir, mkdir
 import matplotlib.pyplot as plt
 
 
+def Multi_output(dynain_path, POINTStress_path, output_points_path):
+
+	CalcResults_output(dynain_path , dynain_path );
+	SigPointData_print(POINTStress_path , dynain_path, output_points_path );
+
+
+
 def CalcResults_output(res_dynain_path,res_output_path):
 
 	Dynain_path = res_dynain_path + "\\dynain";
@@ -188,12 +195,13 @@ def CalcResults_output(res_dynain_path,res_output_path):
 	f1.close();
 
 
-def SigPointData_print(Ciam_stress_path,currcalc_path):
+def SigPointData_print(Ciam_stress_path,currcalc_path, Output_points_path):
 
 	pathdata_path = Ciam_stress_path + '\\CurrPath.dat'
 	
 	f1 = open(pathdata_path,'w');
-	f1.write(currcalc_path);
+	f1.write(currcalc_path + "\n");
+	f1.write(Output_points_path);
 	f1.close();
 
 	chdir(Ciam_stress_path);
@@ -345,7 +353,7 @@ def SigData_plot(calc_path,sigdata_path,pointsdata_path):
 			while sigyy_p[i1][i2][j] == 0:
 				j = j + 1;
 
-			depth_shift_ar[i1][i2] = j;
+			depth_shift_ar[i1][i2] = int(j);
 
 
 
@@ -364,14 +372,14 @@ def SigData_plot(calc_path,sigdata_path,pointsdata_path):
 		for i2 in range(num_xy_level):
 			for i3 in range(num_xy_level):
 
-				sigxx_temp = XYData_det(depth_ar[i2][i3][:-depth_shift_ar[i2][i3]] , sigxx_p[i2][i3][depth_shift_ar[i2][i3]:] , gen_depth_ar[i1]);
-				sigyy_temp = XYData_det(depth_ar[i2][i3][:-depth_shift_ar[i2][i3]] , sigyy_p[i2][i3][depth_shift_ar[i2][i3]:] , gen_depth_ar[i1]);
-				sigzz_temp = XYData_det(depth_ar[i2][i3][:-depth_shift_ar[i2][i3]] , sigzz_p[i2][i3][depth_shift_ar[i2][i3]:] , gen_depth_ar[i1]);
-				sigxy_temp = XYData_det(depth_ar[i2][i3][:-depth_shift_ar[i2][i3]] , sigxy_p[i2][i3][depth_shift_ar[i2][i3]:] , gen_depth_ar[i1]);
-				sigyz_temp = XYData_det(depth_ar[i2][i3][:-depth_shift_ar[i2][i3]] , sigyz_p[i2][i3][depth_shift_ar[i2][i3]:] , gen_depth_ar[i1]);
-				sigxz_temp = XYData_det(depth_ar[i2][i3][:-depth_shift_ar[i2][i3]] , sigxz_p[i2][i3][depth_shift_ar[i2][i3]:] , gen_depth_ar[i1]);
+				sigxx_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , sigxx_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
+				sigyy_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , sigyy_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
+				sigzz_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , sigzz_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
+				sigxy_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , sigxy_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
+				sigyz_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , sigyz_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
+				sigxz_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , sigxz_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
 
-				eq_pl_temp = XYData_det(depth_ar[i2][i3][:-depth_shift_ar[i2][i3]] , eq_pl_str_p[i2][i3][depth_shift_ar[i2][i3]:] , gen_depth_ar[i1])
+				eq_pl_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , eq_pl_str_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1])
 
 				sigxx_average[i1] = sigxx_average[i1] + sigxx_temp;
 				sigyy_average[i1] = sigyy_average[i1] + sigyy_temp;
@@ -411,14 +419,14 @@ def SigData_plot(calc_path,sigdata_path,pointsdata_path):
 		for i2 in range(num_xy_level):
 			for i3 in range(num_xy_level):
 
-				sigxx_temp = XYData_det(depth_ar[i2][i3][:-depth_shift_ar[i2][i3]] , sigxx_p[i2][i3][depth_shift_ar[i2][i3]:] , gen_depth_ar[i1]);
-				sigyy_temp = XYData_det(depth_ar[i2][i3][:-depth_shift_ar[i2][i3]] , sigyy_p[i2][i3][depth_shift_ar[i2][i3]:] , gen_depth_ar[i1]);
-				sigzz_temp = XYData_det(depth_ar[i2][i3][:-depth_shift_ar[i2][i3]] , sigzz_p[i2][i3][depth_shift_ar[i2][i3]:] , gen_depth_ar[i1]);
-				sigxy_temp = XYData_det(depth_ar[i2][i3][:-depth_shift_ar[i2][i3]] , sigxy_p[i2][i3][depth_shift_ar[i2][i3]:] , gen_depth_ar[i1]);
-				sigyz_temp = XYData_det(depth_ar[i2][i3][:-depth_shift_ar[i2][i3]] , sigyz_p[i2][i3][depth_shift_ar[i2][i3]:] , gen_depth_ar[i1]);
-				sigxz_temp = XYData_det(depth_ar[i2][i3][:-depth_shift_ar[i2][i3]] , sigxz_p[i2][i3][depth_shift_ar[i2][i3]:] , gen_depth_ar[i1]);
+				sigxx_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , sigxx_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
+				sigyy_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , sigyy_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
+				sigzz_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , sigzz_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
+				sigxy_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , sigxy_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
+				sigyz_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , sigyz_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
+				sigxz_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , sigxz_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
 
-				eq_pl_temp = XYData_det(depth_ar[i2][i3][:-depth_shift_ar[i2][i3]] , eq_pl_str_p[i2][i3][depth_shift_ar[i2][i3]:] , gen_depth_ar[i1]);
+				eq_pl_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , eq_pl_str_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
 
 
 				sigxx_var[i1] = sigxx_var[i1] + (sigxx_temp - sigxx_average[i1])**2;
@@ -483,7 +491,7 @@ def SigData_plot(calc_path,sigdata_path,pointsdata_path):
 
 	
 	plt.subplot(3,3,1);
-	plt.plot(depth_ar[0][0][:-depth_shift_ar[0][0]],sigyy_p[0][0][depth_shift_ar[0][0]:]);
+	plt.plot(depth_ar[0][0][:-int(depth_shift_ar[0][0])],sigyy_p[0][0][int(depth_shift_ar[0][0]):]);
 	plt.xlabel('h, mcm');
 	plt.ylabel('Sigyy, Pa')
 	plt.grid();
@@ -491,28 +499,28 @@ def SigData_plot(calc_path,sigdata_path,pointsdata_path):
 
 
 	plt.subplot(3,3,3);
-	plt.plot(depth_ar[-1][0][:-depth_shift_ar[-1][0]],sigyy_p[-1][0][depth_shift_ar[-1][0]:]);
+	plt.plot(depth_ar[-1][0][:-int(depth_shift_ar[-1][0])],sigyy_p[-1][0][int(depth_shift_ar[-1][0]):]);
 	plt.xlabel('h, mcm');
 	plt.ylabel('Sigyy, Pa')
 	plt.grid();
 	plt.title('2-nd corner point');
 
 	plt.subplot(3,3,5);
-	plt.plot(depth_ar[num_xy_level/2][num_xy_level/2][:-depth_shift_ar[num_xy_level/2][num_xy_level/2]],sigyy_p[num_xy_level/2][num_xy_level/2][depth_shift_ar[num_xy_level/2][num_xy_level/2]:]);
+	plt.plot(depth_ar[num_xy_level/2][num_xy_level/2][:-int(depth_shift_ar[num_xy_level/2][num_xy_level/2])],sigyy_p[num_xy_level/2][num_xy_level/2][int(depth_shift_ar[num_xy_level/2][num_xy_level/2]):]);
 	plt.xlabel('h, mcm');
 	plt.ylabel('Sigyy, Pa')
 	plt.grid();
 	plt.title('center point');
 
 	plt.subplot(3,3,7);
-	plt.plot(depth_ar[0][-1][:-depth_shift_ar[0][-1]],sigyy_p[0][-1][depth_shift_ar[0][-1]:]);
+	plt.plot(depth_ar[0][-1][:-int(depth_shift_ar[0][-1])],sigyy_p[0][-1][int(depth_shift_ar[0][-1]):]);
 	plt.grid();
 	plt.xlabel('h, mcm');
 	plt.ylabel('Sigyy, Pa');
 	plt.title('3-rd corner point');
 
 	plt.subplot(3,3,9);
-	plt.plot(depth_ar[-1][-1][:-depth_shift_ar[-1][-1]],sigyy_p[-1][-1][depth_shift_ar[-1][-1]:]);
+	plt.plot(depth_ar[-1][-1][:-int(depth_shift_ar[-1][-1])],sigyy_p[-1][-1][int(depth_shift_ar[-1][-1]):]);
 	plt.xlabel('h, mcm');
 	plt.ylabel('Sigyy, Pa')
 	plt.grid();
@@ -618,7 +626,7 @@ def SigData_plot(calc_path,sigdata_path,pointsdata_path):
 
 
 	print "max averaged pl str = ", max(eq_pl_str_average);
-	print "max pl str = ", max(eq_pl_str_p[num_xy_level/2][num_xy_level/2][depth_shift_ar[num_xy_level/2][num_xy_level/2]:]);
+	print "max pl str = ", max(eq_pl_str_p[num_xy_level/2][num_xy_level/2][int(depth_shift_ar[num_xy_level/2][num_xy_level/2]):]);
 	print "max pl str variance = ", max(eq_pl_str_var);
 
 

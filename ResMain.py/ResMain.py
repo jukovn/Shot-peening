@@ -4,13 +4,11 @@ from PostProc import CalcResults_output,SigPointData_print,SigData_plot
 
 if __name__ == "__main__":
 
-	Calc_path = 'G:\\CIAM_stress\\Res(el_type_1)\\Dynain_files\\Shot_500'; # директория файла dynain
-	POINTStress_path = Calc_path;# 'C:\\Temp\\Calc_temp\\Res_without_relief\\Res_with_relief\\Shot250'; # директория программы Point_stress.exe
+	dynain_path = 'E:\\CIAM_stress\\Prog_v.1.1\\V60_R0.08_0.1\\Res\\Shot50'; # директория файла dynain
+	POINTStress_path = "C:\\Nikita\\NII_APP\\CIAM\\Program\\Shot-peening\\ResMain.py";# директория программы Point_stress.exe
+	output_points_path = "E:\\CIAM_stress\\Prog_v.1.1"; # директория файла output_points.dat
 
-	# Файлы dynain, output_points.txt и программу point_stress.exe следует располагать в одной директории.
-	# В результате работы программы в той же директории будет создан файл ANSYS_sig.txt, содержащий осредненные эпюры компонент НДС.
-	# Файл впоследствие используется для запуска макроса на ANSYS (reading_applying_stress_by_el.txt).
 
-	CalcResults_output(Calc_path , Calc_path );
-	SigPointData_print(POINTStress_path , Calc_path);
-	SigData_plot(Calc_path,Calc_path,Calc_path);
+	CalcResults_output(dynain_path , dynain_path );
+	SigPointData_print(POINTStress_path , dynain_path, output_points_path );
+	SigData_plot(dynain_path, dynain_path, output_points_path);
