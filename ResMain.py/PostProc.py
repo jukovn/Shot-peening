@@ -7,18 +7,17 @@ from os import chdir, mkdir
 import matplotlib.pyplot as plt
 
 
-def Multi_output(dynain_path, POINTStress_path, output_points_path):
+def Single_output(base_calc_dir, dynain_path, shot_num, POINTStress_path, output_points_path):
 
 	CalcResults_output(dynain_path , dynain_path );
 	SigPointData_print(POINTStress_path , dynain_path, output_points_path );
+	Results_print(base_calc_dir, shot_num, dynain_path, output_points_path);
 
 
 
 def CalcResults_output(res_dynain_path,res_output_path):
 
 	Dynain_path = res_dynain_path + "\\dynain";
-
-	# print Dynain_path;
 
 	f1 = open(Dynain_path,'r');
 	str1 = f1.readline();
@@ -247,10 +246,10 @@ def XYData_det(x_ar,y_ar,x):
 
 
 
-def SigData_plot(calc_path,sigdata_path,pointsdata_path):
+def SigData_plot(calc_path,sigdata_path,output_points_path):
 
 
-	points_data_path = pointsdata_path + "\\Output_points.dat";
+	points_data_path = output_points_path + "\\Output_points.dat";
 	points_sig_data_path = sigdata_path + "\\sig_data_points.dat";
 
 
@@ -636,3 +635,275 @@ def SigData_plot(calc_path,sigdata_path,pointsdata_path):
 
 
 
+def Results_print(base_calc_dir, shot_num, sigdata_path, output_points_path):
+
+
+	points_data_path = output_points_path + "\\Output_points.dat";
+	points_sig_data_path = sigdata_path + "\\sig_data_points.dat";
+
+
+	f1 = open(points_data_path,'r');
+
+	str1 = f1.readline();
+
+	q = str1.find(" ");
+	points_num = int(str1[:q]);
+	str1 = str1[q+1:];
+
+	q = str1.find(" ");
+	num_xy_level = int(str1[:q]);
+	str1 = str1[q+1:];
+
+	q = str1.find(" ");
+	str1 = str1[q+1:];
+
+	num_z_level = int(str1);
+
+	z_p = zeros((num_xy_level,num_xy_level,num_z_level));
+
+	for i in range(points_num):
+		str1 = f1.readline();
+
+		q = str1.find(' ');
+		str1 = str1[q+1:];
+
+		q = str1.find(' ');
+		str1 = str1[q+1:];
+
+		z_p[i/(num_xy_level*num_z_level)][ (i%(num_xy_level*num_z_level))/num_z_level ][i%num_z_level] = float(str1);
+
+
+	f1.close();
+
+
+
+	f1 = open(points_sig_data_path,'r');
+
+	sigxx_p = zeros((num_xy_level,num_xy_level,num_z_level));
+	sigyy_p = zeros((num_xy_level,num_xy_level,num_z_level));
+	sigzz_p = zeros((num_xy_level,num_xy_level,num_z_level));
+	sigxy_p = zeros((num_xy_level,num_xy_level,num_z_level));
+	sigxz_p = zeros((num_xy_level,num_xy_level,num_z_level));
+	sigyz_p = zeros((num_xy_level,num_xy_level,num_z_level));
+
+	eq_pl_str_p = zeros((num_xy_level,num_xy_level,num_z_level));
+
+	for i in range(points_num):
+		str1 = f1.readline();
+
+		q = str1.find(' ');
+		sigxx_p[i/(num_xy_level*num_z_level)][ (i%(num_xy_level*num_z_level))/num_z_level ][i%num_z_level] = float(str1[:q]);
+		str1 = str1[q+1:];
+
+		q = str1.find(' ');
+		sigyy_p[i/(num_xy_level*num_z_level)][ (i%(num_xy_level*num_z_level))/num_z_level ][i%num_z_level] = float(str1[:q]);
+		str1 = str1[q+1:];
+
+		q = str1.find(' ');
+		sigzz_p[i/(num_xy_level*num_z_level)][ (i%(num_xy_level*num_z_level))/num_z_level ][i%num_z_level] = float(str1[:q]);
+		str1 = str1[q+1:];
+
+		q = str1.find(' ');
+		sigxy_p[i/(num_xy_level*num_z_level)][ (i%(num_xy_level*num_z_level))/num_z_level ][i%num_z_level] = float(str1[:q]);
+		str1 = str1[q+1:];
+
+		q = str1.find(' ');
+		sigxz_p[i/(num_xy_level*num_z_level)][ (i%(num_xy_level*num_z_level))/num_z_level ][i%num_z_level] = float(str1[:q]);
+		str1 = str1[q+1:];
+
+		q = str1.find(' ');
+		sigyz_p[i/(num_xy_level*num_z_level)][ (i%(num_xy_level*num_z_level))/num_z_level ][i%num_z_level] = float(str1[:q]);
+		str1 = str1[q+1:];
+
+		q = str1.find(' ');
+		eq_pl_str_p[i/(num_xy_level*num_z_level)][ (i%(num_xy_level*num_z_level))/num_z_level ][i%num_z_level] = float(str1);
+
+	f1.close();
+
+	
+
+
+	depth_ar = zeros((num_xy_level,num_xy_level,num_z_level));
+	depth_shift_ar = zeros((num_xy_level,num_xy_level));
+
+
+	for j in range(num_z_level):
+		for i1 in range(num_xy_level):
+			for i2 in range(num_xy_level):
+
+				depth_ar[i1][i2][j] = 1e6*(z_p[0][0][0] - z_p[0][0][j]);
+
+
+	for i1 in range(num_xy_level):
+		for i2 in range(num_xy_level):
+
+			j = 0;
+			while sigyy_p[i1][i2][j] == 0:
+				j = j + 1;
+
+			depth_shift_ar[i1][i2] = int(j);
+
+
+
+	gen_depth_ar = depth_ar[0][0];
+
+	sigxx_average = zeros((num_z_level));
+	sigyy_average = zeros((num_z_level));
+	sigzz_average = zeros((num_z_level));
+	sigxy_average = zeros((num_z_level));
+	sigyz_average = zeros((num_z_level));
+	sigxz_average = zeros((num_z_level));
+
+	eq_pl_str_average = zeros((num_z_level));
+
+	for i1 in range(num_z_level):
+		for i2 in range(num_xy_level):
+			for i3 in range(num_xy_level):
+
+				sigxx_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , sigxx_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
+				sigyy_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , sigyy_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
+				sigzz_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , sigzz_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
+				sigxy_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , sigxy_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
+				sigyz_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , sigyz_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
+				sigxz_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , sigxz_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
+
+				eq_pl_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , eq_pl_str_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1])
+
+				sigxx_average[i1] = sigxx_average[i1] + sigxx_temp;
+				sigyy_average[i1] = sigyy_average[i1] + sigyy_temp;
+				sigzz_average[i1] = sigzz_average[i1] + sigzz_temp;
+				sigxy_average[i1] = sigxy_average[i1] + sigxy_temp;
+				sigyz_average[i1] = sigyz_average[i1] + sigyz_temp;
+				sigxz_average[i1] = sigxz_average[i1] + sigxz_temp;
+
+				eq_pl_str_average[i1] = eq_pl_str_average[i1] + eq_pl_temp;
+
+
+
+		sigxx_average[i1] = sigxx_average[i1]/num_xy_level/num_xy_level;
+		sigyy_average[i1] = sigyy_average[i1]/num_xy_level/num_xy_level;
+		sigzz_average[i1] = sigzz_average[i1]/num_xy_level/num_xy_level;
+		sigxy_average[i1] = sigxy_average[i1]/num_xy_level/num_xy_level;
+		sigyz_average[i1] = sigyz_average[i1]/num_xy_level/num_xy_level;
+		sigxz_average[i1] = sigxz_average[i1]/num_xy_level/num_xy_level;
+
+		eq_pl_str_average[i1] = eq_pl_str_average[i1]/num_xy_level/num_xy_level;
+
+
+
+
+	# расчет значения дисперсии компонент тензора напряжения и эквивалентной пластической деформации по глубине эпюры среди точек площадки
+
+	sigxx_var = zeros((num_z_level));
+	sigyy_var = zeros((num_z_level));
+	sigzz_var = zeros((num_z_level));
+	sigxy_var = zeros((num_z_level));
+	sigyz_var= zeros((num_z_level));
+	sigxz_var = zeros((num_z_level));
+
+	eq_pl_str_var = zeros((num_z_level));
+
+	for i1 in range(num_z_level):
+		for i2 in range(num_xy_level):
+			for i3 in range(num_xy_level):
+
+				sigxx_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , sigxx_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
+				sigyy_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , sigyy_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
+				sigzz_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , sigzz_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
+				sigxy_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , sigxy_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
+				sigyz_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , sigyz_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
+				sigxz_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , sigxz_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
+
+				eq_pl_temp = XYData_det(depth_ar[i2][i3][:-int(depth_shift_ar[i2][i3])] , eq_pl_str_p[i2][i3][int(depth_shift_ar[i2][i3]):] , gen_depth_ar[i1]);
+
+
+				sigxx_var[i1] = sigxx_var[i1] + (sigxx_temp - sigxx_average[i1])**2;
+				sigyy_var[i1] = sigyy_var[i1] + (sigyy_temp - sigyy_average[i1])**2;
+				sigzz_var[i1] = sigzz_var[i1] + (sigzz_temp - sigzz_average[i1])**2;
+				sigxy_var[i1] = sigxy_var[i1] + (sigxy_temp - sigxy_average[i1])**2;
+				sigyz_var[i1] = sigyz_var[i1] + (sigyz_temp - sigyz_average[i1])**2;
+				sigxz_var[i1] = sigxz_var[i1] + (sigxz_temp - sigxz_average[i1])**2;
+
+				eq_pl_str_var[i1] = eq_pl_str_var[i1] + (eq_pl_temp - eq_pl_str_average[i1])**2;
+
+
+		sigxx_var[i1] = sigxx_var[i1]/num_xy_level/num_xy_level;
+		sigyy_var[i1] = sigyy_var[i1]/num_xy_level/num_xy_level;
+		sigzz_var[i1] = sigzz_var[i1]/num_xy_level/num_xy_level;
+		sigxy_var[i1] = sigxy_var[i1]/num_xy_level/num_xy_level;
+		sigyz_var[i1] = sigyz_var[i1]/num_xy_level/num_xy_level;
+		sigxz_var[i1] = sigxz_var[i1]/num_xy_level/num_xy_level;
+
+		eq_pl_str_var[i1] = eq_pl_str_var[i1]/num_xy_level/num_xy_level;
+
+
+	
+
+	# вывод файла с осредненными эпюрами компонент НДС для загрузки в ANSYS
+	curr_calc_dir = base_calc_dir + "\\Shot" + str(int(shot_num))
+
+	f1 = open(curr_calc_dir + "\\ANSYS_sig.txt",'w');
+
+	f1.write(str(num_z_level) + '\n');
+
+	for i in range(num_z_level):
+		str_tmp = "{:22.15E}  {:22.15E}  {:22.15E}  {:22.15E}  {:22.15E}  {:22.15E}  {:22.15E}  {:22.15E}".format(gen_depth_ar[i]*1e-3,sigxx_average[i]/1e6,sigyy_average[i]/1e6,sigzz_average[i]/1e6,sigxy_average[i]/1e6,sigxz_average[i]/1e6,sigyz_average[i]/1e6,eq_pl_str_average[i]);
+		f1.write(str_tmp + "\n");
+
+
+
+
+	f1.close();
+
+	# Вывод файла Results_summary.dat в директории результатов
+
+
+	f1 = open(base_calc_dir + "\\Results_summary.dat",'a');
+
+
+	f1.write("Shot " + str(int(shot_num)) + "\n\n");
+
+	f1.write("Sigxx:\n");
+	f1.write("max = " + str(max(abs(sigxx_average))/1e6) + "MPa\n");
+	for i in range(num_z_level):
+		if abs(sigxx_average[i]) == max(abs(sigxx_average)):
+			k=i;
+
+	f1.write("depth max = " + str(gen_depth_ar[k]) + "\n");
+	k=0;
+	i=0;
+	while k==0:
+
+		if sign(sigxx_average[i]) != sign(sigxx_average[i+1]):
+			k=i;
+		i = i + 1
+	f1.write("sig = 0: h = " + str(gen_depth_ar[k] + abs(sigxx_average[k])*(gen_depth_ar[k+1] - gen_depth_ar[k])/( abs(sigxx_average[k]) + abs(sigxx_average[k+1]) )) + '\n\n');
+
+	f1.write("Sigyy:\n");
+	f1.write("max = " + str(max(abs(sigyy_average))/1e6) + "MPa\n");
+	f1.write("max variation = " + str(max(sigyy_var)) + '\n');
+
+	for i in range(num_z_level):
+		if abs(sigyy_average[i]) == max(abs(sigyy_average)):
+			k=i;
+	f1.write("depth max = " + str(gen_depth_ar[k]) + "\n");
+	k=0;
+	i=0;
+	while k==0:
+		if sign(sigyy_average[i]) != sign(sigyy_average[i+1]):
+			k=i;
+		i = i + 1
+	f1.write("sig = 0: h = " + str(gen_depth_ar[k] + abs(sigyy_average[k])*(gen_depth_ar[k+1] - gen_depth_ar[k])/( abs(sigyy_average[k]) + abs(sigyy_average[k+1]) )) + '\n\n');
+
+	f1.write("Sigzz:\n");
+	f1.write("max = " + str(max(abs(sigzz_average))/1e6) + "MPa\n");
+	for i in range(num_z_level):
+		if abs(sigzz_average[i]) == max(abs(sigzz_average)):
+			k=i;
+	f1.write("depth max = " + str(gen_depth_ar[k]) + '\n\n');
+
+	f1.write("max averaged pl str = " + str(max(eq_pl_str_average)) + '\n' );
+	f1.write("max pl str = " + str(max(eq_pl_str_p[num_xy_level/2][num_xy_level/2][int(depth_shift_ar[num_xy_level/2][num_xy_level/2]):])) + '\n');
+	f1.write("max pl str variance = " + str(max(eq_pl_str_var)) + '\n\n');
+
+	f1.close();

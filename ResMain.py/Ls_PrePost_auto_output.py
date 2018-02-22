@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from subprocess import check_call
 from os import chdir, mkdir, path
-from PostProc import Multi_output
+from PostProc import Single_output
 
 if __name__ == "__main__":
 
@@ -84,8 +84,8 @@ if __name__ == "__main__":
 	# запуск макроса в LS PrePost в batch-режиме
 	# 
 
-	# chdir(LS_PrePost_path);
-	# res_sp = check_call([LS_PrePost_name, 'c=' + macro_path , '-nographics' ] );
+	chdir(LS_PrePost_path);
+	res_sp = check_call([LS_PrePost_name, 'c=' + macro_path , '-nographics' ] );
 
 
 	#
@@ -94,31 +94,31 @@ if __name__ == "__main__":
 
 	
 
-	# for i in range(n_states):
+	for i in range(n_states):
 
-	# 	curr_state_num = (i+1);
-	# 	Res_path_curr = Res_path_base + "\Shot" + str(curr_state_num*d_shot_num);
+		curr_state_num = (i+1);
+		Res_path_curr = Res_path_base + "\Shot" + str(curr_state_num*d_shot_num);
 
-	# 	f1 = open(Mac_add_path,'r');
-	# 	f2 = open(Res_path_curr + "\\dynain_old",'r');
-	# 	f3 = open(Res_path_curr + "\\Relief_mac.k","w");
-
-
-	# 	strtmp = f2.readline();
-
-	# 	while strtmp.find("*END") == -1:
-	# 		f3.write(strtmp);
-	# 		strtmp = f2.readline();
-
-	# 	for strtmp in f1:
-	# 		f3.write(strtmp);
-
-	# 	f3.write("\n*END\n");
+		f1 = open(Mac_add_path,'r');
+		f2 = open(Res_path_curr + "\\dynain_old",'r');
+		f3 = open(Res_path_curr + "\\Relief_mac.k","w");
 
 
-	# 	f3.close();
-	# 	f2.close();
-	# 	f1.close();
+		strtmp = f2.readline();
+
+		while strtmp.find("*END") == -1:
+			f3.write(strtmp);
+			strtmp = f2.readline();
+
+		for strtmp in f1:
+			f3.write(strtmp);
+
+		f3.write("\n*END\n");
+
+
+		f3.close();
+		f2.close();
+		f1.close();
 
 
 	#
@@ -126,16 +126,16 @@ if __name__ == "__main__":
 	#
 
 
-	# for i in range(n_states):
+	for i in range(n_states):
 
-	# 	curr_state_num = (i+1);
-	# 	Res_path_curr = Res_path_base + "\Shot" + str(curr_state_num*d_shot_num);
+		curr_state_num = (i+1);
+		Res_path_curr = Res_path_base + "\Shot" + str(curr_state_num*d_shot_num);
 
 
-	# 	f_out = open(Res_path_curr + "\\Out.dat", 'w');
-	# 	chdir(Res_path_curr);
-	# 	res_sp = check_call([LS_Dyna_path + "\\" + LS_Dyna_name, 'pr=aa_r_dy' , 'memory=600M' , 'i=' + Res_path_curr + '\\Relief_mac.k', 'NCPU=' + str(NCPU), 'PARA=1'], stdout = f_out);
-	# 	f_out.close();
+		f_out = open(Res_path_curr + "\\Out.dat", 'w');
+		chdir(Res_path_curr);
+		res_sp = check_call([LS_Dyna_path + "\\" + LS_Dyna_name, 'pr=aa_r_dy' , 'memory=600M' , 'i=' + Res_path_curr + '\\Relief_mac.k', 'NCPU=' + str(NCPU), 'PARA=1'], stdout = f_out);
+		f_out.close();
 
 
 	#
@@ -169,6 +169,8 @@ if __name__ == "__main__":
 	# вывод промежуточных файлов результатов
 	#
 
+	f1 = open(Res_path_base + "\\Results_summary.dat", 'w');
+
 	for i in range(n_states):
 
 		curr_state_num = (i+1);
@@ -176,5 +178,8 @@ if __name__ == "__main__":
 
 		dynain_path = Res_path_curr;
 
-		Multi_output(dynain_path, POINTStress_path, output_points_path)
+		Single_output(Res_path_base, dynain_path, curr_state_num*d_shot_num, POINTStress_path, output_points_path)
+
+
+	f1.close();
 
